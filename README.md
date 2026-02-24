@@ -321,11 +321,4 @@ This project is built on five principles. Full statement: [`PROJECT_PRINCIPLES.m
 
 MIT — see [LICENSE](LICENSE). All code, concordance tables, metric implementations, and simulation logic are open for replication, audit, and reuse.
 
----
-
-## Author
-
-**Max Obi** — Data Engineer & AI Consultant  
-[Wisabi Analytics](https://wisabianalytics.com) | [LinkedIn](https://linkedin.com/in/) | [YouTube: DataSenseiObi](https://youtube.com/)
-
 *Part of the Production AI for Data Professionals series.*
