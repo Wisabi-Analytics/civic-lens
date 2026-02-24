@@ -320,5 +320,3 @@ This project is built on five principles. Full statement: [`PROJECT_PRINCIPLES.m
 ## Licence
 
 MIT — see [LICENSE](LICENSE). All code, concordance tables, metric implementations, and simulation logic are open for replication, audit, and reuse.
-
-*Part of the Production AI for Data Professionals series.*
