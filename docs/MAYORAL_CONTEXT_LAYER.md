@@ -86,7 +86,7 @@ The following language is used in all publications referencing mayoral elections
 
 ---
 
-## Tech Nation Positioning
+## Positioning
 
 The decision to exclude mayoral elections — despite their political prominence — demonstrates:
 
