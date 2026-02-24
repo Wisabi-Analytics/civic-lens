@@ -1,0 +1,26 @@
+# civic-lens Model Lock
+
+Status: NOT YET LOCKED
+
+This file will be committed before midnight 30 April 2026.
+The commit SHA hash will be the permanent record of the model state.
+
+Contents at lock time:
+  model_version_sha:        [git commit hash — identifies code state exactly]
+  scenario_definitions_sha: [hash of docs/SCENARIO_DEFINITIONS.md]
+  volatility_score_formula: VOL = (0.5 × Σ|swing_i|) + (0.5 × ΔFI)
+  bootstrap_source:         borough-specific historical error distributions
+  rng_seed:                 20260430
+  bootstrap_source:         borough-specific historical error distributions
+  freeze_timestamp_utc:     2026-04-30T[HH:MM:SS]Z
+  statement: |
+    Model frozen 30 April 2026 to prevent adaptive tuning.
+    No parameters, scenarios, or uncertainty bands were modified
+    after this timestamp.
+
+Reproduction:
+  git checkout [model_version_sha]
+  pip install -r requirements.txt
+  python src/calibration/run_backtest.py
+  python src/simulation/run_scenarios.py --config artifacts/model_lock.txt
+  # Outputs should match artifacts/scenario_outputs.csv exactly

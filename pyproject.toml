@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "civic-lens"
+version = "0.1.0"
+description = "Transparent electoral volatility measurement system for English local elections"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+authors = [
+    { name = "Max Obi", email = "" }
+]
+keywords = ["elections", "volatility", "civic", "data"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "pandas>=2.0,<3.0",
+    "numpy>=1.24,<2.0",
+    "geopandas>=0.14,<1.0",
+    "rapidfuzz>=3.0,<4.0",
+    "pyarrow>=14.0",
+    "matplotlib>=3.7,<4.0",
+    "scipy>=1.11,<2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "black>=23.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+civic-lens-demo = "src.calibration.run_backtest:demo"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = ["E", "F", "W", "I"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+# ── Dependency pins (lock with: uv lock  OR  pip-compile) ────────────────────
+# For fully reproducible builds, generate a lockfile:
+#   uv lock          → uv.lock
+#   pip-compile      → requirements.lock
+#
+# The RNG seed (20260430) in artifacts/model_lock.txt guarantees Monte Carlo
+# determinism independently of dependency versions, but pinned deps ensure
+# numeric libraries produce identical floating-point results across environments.
