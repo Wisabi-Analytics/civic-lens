@@ -9,14 +9,52 @@ build/
 venv/
 env/
 
-# Raw data — not committed (large, redistributed under OGL)
-data/raw/ec/
-data/raw/ons/
-data/raw/lgbce/
-
-# Keep inventory and processed outputs
+# Raw and generated data
+data/raw/**
+!data/raw/
+!data/raw/DATA_SOURCE_METADATA.md
 !data/raw/data_inventory.csv
+
+data/interim/**
+!data/interim/
+
+# Processed outputs (keep folder, ignore contents by default)
+data/processed/**
 !data/processed/
+!data/processed/DATA_DICTIONARY.md
+
+# Large boundary files / shapefiles
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+*.gpkg
+*.geojson
+*.zip
+
+# Notebook outputs
+*.nb.html
+
+# Artifacts / generated outputs
+artifacts/**/*.csv
+artifacts/**/*.png
+artifacts/**/*.parquet
+artifacts/**/*.xlsx
+artifacts/**/*.json
+!artifacts/model_lock.txt
+!artifacts/calibration_report.md
+!artifacts/london_vi_cap.txt
+
+# Reports exports / snapshots
+reports/**/*.png
+reports/**/*.html
+dashboard/snapshots/**
+
+# Tableau / BI exports
+*.hyper
+*.twb
+*.twbx
 
 # Notebooks — strip outputs before commit
 .ipynb_checkpoints/

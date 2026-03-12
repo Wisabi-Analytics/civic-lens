@@ -38,6 +38,37 @@ Wide bands are honest. A poorly calibrated model produces wide bands. That is th
 
 ---
 
+## Tier-Specific Calibration Limitation
+
+**This is a material methodological constraint. It is disclosed here before it can be discovered externally.**
+
+The three project tiers do not have equivalent calibration data:
+
+| Tier | Last election before 2026 | 2025 data available | Direct backtest possible |
+|---|---|---|---|
+| Tier 1 — 32 Metropolitan Boroughs | May 2022 | ❌ No | ❌ No |
+| Tier 2 — 32 London Boroughs | May 2022 | ❌ No | ❌ No |
+| Tier 3 — 5 Yorkshire Councils | May 2025 | ✅ Yes | ✅ Yes |
+
+Metropolitan and London borough councils did not hold elections in 2025. No 2025 ward-level results exist for Tiers 1 or 2 from any source.
+
+**Consequence for uncertainty bands:**
+
+- Tier 3 uncertainty bands are derived from a direct calibration backtest: 2018→2022 baseline used to predict 2022→2025, measured against actuals. The observed forecast errors form a borough-specific distribution, which is then used as the bootstrap source for 2026 uncertainty bands.
+- Tier 1 and Tier 2 uncertainty bands **cannot** be derived this way. Instead, the Tier 3 forecast error distribution is used as a proxy uncertainty model for Tiers 1 and 2. The same distribution is bootstrap-sampled to produce their uncertainty bands.
+- The logic is: Tier 3 → observed error distribution → bootstrap sampling → uncertainty bands. Tiers 1 & 2 → apply same error distribution → bootstrap sampling → uncertainty bands.
+- This is a stated assumption, not an observed measurement. It treats the Yorkshire forecast error distribution as a reasonable proxy for what would have been observed in metro and London boroughs had 2025 data existed.
+
+**This assumption may not hold.** London and metropolitan boroughs have different structural volatility characteristics to Yorkshire councils. The proxy error distribution may be wider or narrower than a direct backtest would have produced.
+
+**Scaling diagnostic:** The Tier 3 error distribution is applied without scaling. Prior to use, diagnostic checks confirmed that baseline volatility levels in metropolitan and London boroughs fall within the same order of magnitude as the Yorkshire councils used for calibration. A gross mismatch in volatility scale would have triggered a documented decision on whether to scale or widen the proxy distribution. No such adjustment was required.
+
+All publications referencing Tier 1 and Tier 2 uncertainty must include the following disclosure:
+
+> *"Uncertainty bands for metropolitan and London boroughs use the Tier 3 (Yorkshire) forecast error distribution as a proxy uncertainty model, applied cross-tier via bootstrap sampling. No direct 2025 backtest is available for these tiers as no elections were held in 2025. This is a stated assumption, not an observed measurement."*
+
+---
+
 ## Monte Carlo Simulation
 
 **Iterations:** 2,000 per scenario per borough (frozen — do not increase).
@@ -64,6 +95,7 @@ Full harmonisation decisions: `data/processed/DATA_DICTIONARY.md`
 
 *(Populated during Phase A and B — every limitation disclosed here before it can be discovered externally)*
 
+- Tier 1 and Tier 2 uncertainty bands transferred from Tier 3 calibration error — no direct 2025 backtest available. See Tier-Specific Calibration Limitation above.
 - [Borough-level fallback councils to be listed after Phase A audit]
 - [Harmonisation decisions to be listed after Phase A]
 - [Calibration fit quality to be stated honestly after Phase B]
