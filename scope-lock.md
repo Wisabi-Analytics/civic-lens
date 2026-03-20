@@ -1,9 +1,9 @@
 # Scope Lock
 
-**Status:** DRAFT — fill in and commit before Phase A data acquisition begins.  
-**Locked by:** [Your name]  
-**Lock date:** [Date]  
-**Version:** 1.0
+**Status:** LOCKED — committed March 2026  
+**Locked by:** Max Obi / Wisabi Analytics  
+**Lock date:** March 2026  
+**Version:** 1.1 (calibration chain updated from 2018→2022→2025 to 2014→2018→2022)
 
 Once committed, this document governs all project decisions. Changes require a new commit with explicit rationale.
 
@@ -82,13 +82,16 @@ See: `docs/MAYORAL_CONTEXT_LAYER.md`
 
 | Year | Purpose | Status |
 |---|---|---|
-| 2018 | Baseline (pre-disruption baseline — clean) | REQUIRED |
-| 2021 | Context only if needed | LOW PRIORITY |
-| 2022 | Mid-point transition | REQUIRED |
-| 2025 | Shock measurement | REQUIRED |
+| 2014 | Training window — by-thirds cohort year | REQUIRED |
+| 2015 | Training window — by-thirds cohort year | REQUIRED |
+| 2016 | Training window — by-thirds cohort year | REQUIRED |
+| 2018 | Backtest origin (training endpoint) | REQUIRED |
+| 2021 | Completeness only — excluded from chain | NOT IN PIPELINE |
+| 2022 | Backtest target and prediction baseline | REQUIRED |
+| 2025 | Not used — no in-scope boroughs held elections | NOT IN PIPELINE |
 | 2026 | Live ingestion (election night) | LIVE PIPELINE |
 
-**Baseline:** 2018→2022 transition. 2021 excluded from baseline — pandemic election with structurally suppressed turnout.
+**Calibration chain:** 2014→2018 (train) / 2018→2022 (backtest, measure error) / 2022→2026 (predict). 2021 falls between backtest origin and target — excluded by chain design. 2025 not used: county council fallow year for by-thirds metro districts.
 
 ---
 
@@ -109,15 +112,15 @@ See: `docs/MAYORAL_CONTEXT_LAYER.md`
 
 | ID | Name | Definition |
 |---|---|---|
-| S0 | Baseline | Uniform swing = 0pp from 2025 |
+| S0 | Baseline | Uniform swing = 0pp — all parties hold their 2022 vote shares |
 | S1 | High volatility continuation | Challenger +2pp; established −2pp |
 | S2 | Partial recovery | Established +1.5pp; challenger −1.5pp |
 | S3 | Challenger surge | Challenger +4pp; established −4pp |
 | S4 | Deprivation turnout shift | ΔT +3pp in IMD deciles 1–3, vote share unchanged |
 | S5 | Stability reversion | VI capped at empirical London 90th pctile — or REMOVED |
 
-**Challenger definition:** Party with highest absolute VS swing gain in 2025 in that borough.  
-**Tie-break:** Higher 2025 absolute vote share.  
+**Challenger definition:** Party with highest absolute VS swing gain in the **2018→2022** transition in that borough.  
+**Tie-break:** Higher 2022 absolute vote share.  
 **Independents:** Pooled as `IND`. Treated as challenger if they meet the swing criterion.
 
 **Rule:** No scenarios added after Phase B freeze commit.
@@ -154,8 +157,8 @@ See: `docs/MAYORAL_CONTEXT_LAYER.md`
 
 | Date | Condition | Action |
 |---|---|---|
-| 3 March | <50% Yorkshire councils harmonised | London Tier 2 drops to contextual only |
-| 8 March | Phase A not complete | Reduce Tier 1 to 10-borough sample |
+| Phase 7 | >40% of in-scope wards unmatched in concordance table | Borough-only fallback applied across all affected authorities — ward-level analysis abandoned |
+| Phase 8 | QA failures exceed 5% of in-scope rows | Hold pipeline; investigate before proceeding to Phase 9 |
 | Phase B | London VI 90th pctile not derivable | S5 removed entirely |
 | Phase B | Any scenario interval P10>P50 or P50>P90 | Reduce to 4 scenarios (drop S3 + S5) |
 | Phase A (ongoing) | EC files schema mismatch or missing fields | Activate EC_PLAN_B_PROTOCOL.md |
@@ -172,10 +175,10 @@ See: `docs/MAYORAL_CONTEXT_LAYER.md`
 
 ## Signed Off
 
-- [ ] Tiers confirmed
-- [ ] Councils listed by name
-- [ ] Metrics defined with formulas
-- [ ] Scenarios named (locked after Phase B)
-- [ ] Exclusions listed
-- [ ] Publication dates confirmed
-- [ ] Committed to GitHub
+- [x] Tiers confirmed
+- [x] Councils listed by name
+- [x] Metrics defined with formulas
+- [x] Scenarios named and locked
+- [x] Exclusions listed
+- [x] Publication dates confirmed
+- [x] Committed to GitHub

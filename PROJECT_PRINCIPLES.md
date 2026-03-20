@@ -8,7 +8,7 @@ civic-lens is built on five principles. These govern every analytical decision, 
 
 This project has no political affiliation, no preferred electoral outcome, and no persuasion intent.
 
-All metrics are party-agnostic. No party is named in scenario logic — scenarios are defined in terms of "challenger" and "established" parties, with challenger defined mechanically per borough as the party with the highest absolute vote share swing gain in 2025. This produces different party labels in different geographies, which is analytically correct.
+All metrics are party-agnostic. No party is named in scenario logic — scenarios are defined in terms of "challenger" and "established" parties, with challenger defined mechanically per borough as the party with the highest absolute vote share swing gain in the 2018→2022 transition. This produces different party labels in different geographies, which is analytically correct.
 
 We do not publish commentary that frames any electoral outcome as good or bad. We measure volatility. We do not endorse it.
 

@@ -21,7 +21,7 @@ This project produces three public outputs:
 
 | Publication | Date | What It Does |
 |---|---|---|
-| [Part 1 — Historical Baseline (2018–2022)](https://wisabianalytics.com) | 25 March 2026 | Establishes what "normal" electoral volatility looks like before the 2025 shock |
+| [Part 1 — Historical Baseline (2014–2022)](https://wisabianalytics.com) | 25 March 2026 | Establishes what "normal" electoral volatility looks like across two full cycles (2014→2018 and 2018→2022) |
 | [Part 2 — Scenarios & Uncertainty](https://wisabianalytics.com) | 14 April 2026 | Models six defined scenarios for May 7th using calibrated uncertainty bands |
 | [Part 3 — Predictions vs Reality](https://wisabianalytics.com) | 9 May 2026 | Post-election accuracy audit published within 48 hours of results |
 
@@ -99,14 +99,14 @@ Scenario definitions are **frozen after the Phase B commit**. No new scenarios a
 
 | ID | Name | Definition |
 |---|---|---|
-| S0 | Baseline | Uniform swing = 0pp from 2025 across all parties |
+| S0 | Baseline | Uniform swing = 0pp — all parties hold their 2022 vote shares |
 | S1 | High volatility continuation | Challenger VS +2pp; established VS −2pp (challenger defined per borough) |
 | S2 | Partial recovery | Established VS +1.5pp; challenger VS −1.5pp |
 | S3 | Challenger surge | Challenger VS +4pp; established VS −4pp |
 | S4 | Deprivation turnout shift | ΔT = +3pp in IMD deciles 1–3. Vote share unchanged. |
-| S5 | Stability reversion | VI capped at 90th percentile London VI 2010–2022. Empirically derived or removed. |
+| S5 | Stability reversion | VI capped at 90th percentile London VI derived from two historical cycles (2014→2022). Empirically derived or removed. |
 
-**Challenger definition:** The party with the highest absolute vote share swing gain in 2025 in that borough. Tie-break: higher 2025 absolute vote share. Independents pooled as `IND`. Full rules in [`docs/SCENARIO_DEFINITIONS.md`](docs/SCENARIO_DEFINITIONS.md).
+**Challenger definition:** The party with the highest absolute vote share swing gain in the **2018→2022** transition in that borough. Tie-break: higher 2022 absolute vote share. Independents pooled as `IND`. Full rules in [`docs/SCENARIO_DEFINITIONS.md`](docs/SCENARIO_DEFINITIONS.md).
 
 **Borough independence:** Boroughs are simulated independently. No cross-borough swing correlation is modelled. This is a deliberate, stated simplification — local elections are driven by borough-specific dynamics that make national correlation assumptions unjustified at this geography.
 
@@ -116,11 +116,11 @@ Scenario definitions are **frozen after the Phase B commit**. No new scenarios a
 
 ## Methodology
 
-**Baseline year: 2018.** The 2018→2022 transition is used as the historical baseline. 2021 results are acquired and stored locally under `data/raw/ec/` for completeness but are **excluded from baseline calibration** — the 2021 cycle was a pandemic election with structurally suppressed turnout and cancelled contests in many wards, making it atypical as a baseline for "normal" electoral conditions. Full rationale in [`docs/DECISIONS_LOG.md`](docs/DECISIONS_LOG.md).
+**Calibration chain: 2014→2018→2022.** The model uses a three-stage empirical chain: training window (2014/2015/2016 elections → 2018 endpoint), backtest (2018→2022: predicted vs actual, measured error), prediction (2022→2026: calibrated error sets uncertainty bands). 2025 data is not used at any stage. Full chain documented in [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md).
 
-**Calibration-first.** The model is trained on 2018→2022 data, used to predict 2025, and the measured error sets all 2026 uncertainty bands. See [`artifacts/calibration_report.md`](artifacts/calibration_report.md).
+**2021 excluded.** 2021 results are stored under `data/raw/ec/` for completeness but excluded from the calibration chain — the cycle falls between backtest origin (2018) and backtest target (2022) and plays no structural role. Pandemic distortion is a secondary reason. See [`docs/DECISIONS_LOG.md`](docs/DECISIONS_LOG.md).
 
-**Monte Carlo.** 2,000 iterations per scenario per borough. Swing distributions are bootstrapped from **borough-specific historical error distributions** derived from the calibration backtest — not national pooled distributions and not assumed parametric distributions. Each borough's uncertainty reflects its own historical volatility pattern. All simulations use a fixed RNG seed (`20260430`) recorded in `artifacts/model_lock.txt`.
+**Monte Carlo.** 2,000 iterations per scenario per borough. Swing distributions are bootstrapped from **borough-specific forecast error distributions** measured from the 2014→2018 / 2018→2022 backtest — not national pooled distributions and not assumed parametric distributions. Each borough's uncertainty reflects its own historical volatility pattern. All simulations use a fixed RNG seed (`20260430`) recorded in `artifacts/model_lock.txt`.
 
 **Uncertainty.** All outputs show P10/P50/P90 bands. Single-point estimates are never published without intervals. Wide bands are honest — they will not be narrowed to appear more impressive.
 
@@ -137,7 +137,7 @@ model_version_sha:        [populated 30 April]
 scenario_definitions_sha: [populated 30 April]
 volatility_score_formula: VOL = (0.5 × Σ|swing_i|) + (0.5 × ΔFI)
 rng_seed:                 20260430
-bootstrap_source:         borough-specific historical error distributions
+bootstrap_source:         borough-specific 2018→2022 forecast error distributions (training: 2014→2018)
 freeze_timestamp_utc:     2026-04-30T[HH:MM:SS]Z
 statement:                "Model frozen 30 April 2026 to prevent adaptive tuning.
                            No parameters, scenarios, or uncertainty bands were
@@ -213,7 +213,7 @@ civic-lens/
 │   ├── simulation/
 │   │   └── scenario_model.py         # Monte Carlo engine (2,000 iter/scenario/borough)
 │   ├── calibration/
-│   │   └── run_backtest.py           # Calibration backtest (2018→2022→predict 2025)
+│   │   └── run_backtest.py           # Calibration backtest (train: 2014→2018; test: 2018→2022)
 │   └── audit/
 │       └── audit_results.py          # Post-election accuracy script (pre-built before May 7th)
 │
@@ -227,7 +227,8 @@ civic-lens/
 │       ├── clean_election_results.csv
 │       ├── concordance_table.csv     # Ward harmonisation — standalone open artefact
 │       ├── baseline_metrics.csv      # 2018→2022 metric outputs
-│       ├── shock_metrics.csv         # 2022→2025 metric outputs
+│       ├── training_metrics.csv      # 2014→2018 computed metric outputs
+│       ├── backtest_actuals_2022.csv  # Actual 2018→2022 outcomes (backtest target)
 │       └── DATA_DICTIONARY.md        # Every field, every harmonisation assumption
 │
 ├── artifacts/                        # Versioned, immutable outputs
@@ -293,13 +294,15 @@ scipy>=1.11
 
 | Dataset | Years | Source | Licence |
 |---|---|---|---|
-| Electoral results | 2018, 2021, 2022, 2025 | [Electoral Commission](https://www.electoralcommission.org.uk/who-we-are-and-what-we-do/elections-and-referendums/past-elections-and-referendums) | OGL v3 |
-| Ward boundary lookups | 2018, 2022, 2025 vintages | [ONS Open Geography](https://geoportal.statistics.gov.uk) | OGL v3 |
+| Electoral results (DCLEAPIL) | 2014, 2015, 2016, 2018, 2022 | [DCLEAPIL v1.0 — Figshare](https://figshare.com/articles/dataset/DCLEAPIL_v1_0_British_local_election_results_dataset_2006-2024/28920872) + [Commons Library](https://commonslibrary.parliament.uk) | CC BY-SA 4.0 / OPL v3 |
+| Ward boundary lookups | Dec 2016, Dec 2018, May/Dec 2022 vintages + 2011→2022 crosswalk | [ONS Open Geography](https://geoportal.statistics.gov.uk) | OGL v3 |
 | Ward boundary shapefiles | Current | [ONS Open Geography](https://geoportal.statistics.gov.uk) | OGL v3 |
 | LGBCE boundary reviews | All cycles | [LGBCE](https://www.lgbce.org.uk/all-reviews) | OGL v3 |
 | IMD 2019 (descriptive overlay only) | 2019 | [ONS Nomis](https://www.nomisweb.co.uk) | OGL v3 |
 
-**Note on 2021:** Results are acquired and stored locally under `data/raw/ec/` for completeness and potential contextual use. 2021 is **excluded from baseline calibration** due to pandemic-era distortions. This exclusion is documented in [`docs/DECISIONS_LOG.md`](docs/DECISIONS_LOG.md).
+**Note on 2021:** Results are stored under `data/raw/ec/` for completeness only. 2021 is excluded from the calibration chain — it falls between the backtest origin (2018) and backtest target (2022) and plays no structural role. See [`docs/DECISIONS_LOG.md`](docs/DECISIONS_LOG.md).
+
+**Note on 2025:** No in-scope metro or London boroughs held elections in 2025 (county council fallow year). 2025 data is not used in the pipeline. The Commons Library 2025 file is retained for provenance only.
 
 Raw data files are not committed to this repository (see `.gitignore`). Run the Phase A acquisition tasks in `scope-lock.md` to populate `/data/raw/`.
 

@@ -22,6 +22,11 @@ Key decisions with full rationale and rejected alternatives.
 | Mayoral elections | Descriptive context layer only — excluded from volatility system | All 10 combined authority mayoral elections are newly-established roles. No historical baseline = no calibration = no volatility outputs. Publishing volatility metrics without a baseline would be methodologically dishonest. |
 | All-out elections (Tier 1) | Borough aggregate only for 13 affected metropolitan boroughs | 13 of 32 Tier 1 boroughs hold all-out elections due to LGBCE reviews. Ward-level longitudinal comparisons impossible without concordance. Borough aggregate preserves analytical validity. |
 
+| Calibration chain | 2014→2018 (train) / 2018→2022 (backtest) / 2022→2026 (predict) | Original chain (2018→2022→2025) required 2025 metro/London borough data which does not exist (county council fallow year). Revised chain uses 65+ boroughs across full 2022 backtest — statistically stronger than a Calderdale-only 2025 calibration. Brexit-era training window limitation stated explicitly in METHODOLOGY.md. |
+| 2025 data | Not used in pipeline | No in-scope metro or London boroughs held 2025 elections. Calderdale held a by-thirds result but single-borough calibration is insufficient for generalisable error distribution. Commons Library 2025 retained for provenance only. |
+| data_source_era boundary | 2015/2016 (not pre-2019) | DCLEAPIL dataset field confirms: 2014/2015 = LEAP only; 2016 = DC-LEAP first merge year. The pre-2019 label used in earlier drafts was wrong. |
+| DCLEAPIL file architecture | One file (2006–2024), filtered at load time | Uploads were slices for size reasons only. Pipeline reads full file, drops null-year rows, filters to {2014, 2015, 2016, 2018, 2022}. Encoding: UTF-8-BOM (utf-8-sig). |
+
 *(Full entries including rejected alternatives maintained in WarBoard v3 Decisions Log tab)*
 
 ---
@@ -46,6 +51,8 @@ For each:
 - `analysis_level = borough_only`
 - `boundary_note = "All-out election 2026 — LGBCE boundary review. No ward-level longitudinal analysis."`
 - Concordance table entry: `change_type = all_out_lgbce`
+
+'West Yorkshire metropolitan boroughs (Leeds, Bradford, Calderdale, Kirklees, Wakefield) are designated as Tier 3 for geographic and institutional analysis coherence (WYCA footprint). They are calibrated from the same 2014→2018→2022 backtest as Tiers 1 and 2 — not a distinct calibration tier. 2025 data is not used in the pipeline. The original rationale (designating them as a calibration tier based on 2025 election availability) was superseded in March 2026 when the calibration chain was revised to 2014→2018→2022. South Yorkshire metropolitan boroughs (Sheffield, Barnsley, Rotherham) and all other MBs are in Tier 1 as 2026 election-active authorities."' 
 
 ---
 
