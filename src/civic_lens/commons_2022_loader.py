@@ -55,6 +55,13 @@ def load_commons_2022() -> tuple[pd.DataFrame, pd.DataFrame]:
     df_cand['data_source_era'] = 'dc_leap'
     df_cand['ward_code_vintage'] = 'WD22CD'
 
+    df_cand['authority_code'] = df_cand['authority_code'].astype('string').str.strip()
+    scope_mask = df_cand['authority_code'].str.startswith(('E08', 'E09'), na=False)
+    out_of_scope = len(df_cand) - scope_mask.sum()
+    if out_of_scope:
+        print(f'INFO: Dropping {out_of_scope} Commons 2022 candidates outside E08/E09 scope')
+    df_cand = df_cand[scope_mask].copy()
+
     party_cols = [c for c in df_ward.columns if c not in NON_PARTY_COLS]
     df_ward_long = df_ward.melt(
         id_vars=[
@@ -84,6 +91,13 @@ def load_commons_2022() -> tuple[pd.DataFrame, pd.DataFrame]:
     df_ward_long['source_dataset'] = 'commons_2022'
     df_ward_long['data_source_era'] = 'dc_leap'
     df_ward_long['ward_code_vintage'] = 'WD22CD'
+
+    df_ward_long['authority_code'] = df_ward_long['authority_code'].astype('string').str.strip()
+    ward_scope_mask = df_ward_long['authority_code'].str.startswith(('E08', 'E09'), na=False)
+    ward_out_of_scope = len(df_ward_long) - ward_scope_mask.sum()
+    if ward_out_of_scope:
+        print(f'INFO: Dropping {ward_out_of_scope} Commons 2022 ward rows outside E08/E09 scope')
+    df_ward_long = df_ward_long[ward_scope_mask].copy()
 
     df_cand.to_parquet(INTERIM_PATH / 'commons_2022_candidates.parquet', index=False)
     df_ward_long.to_parquet(INTERIM_PATH / 'commons_2022_wards.parquet', index=False)

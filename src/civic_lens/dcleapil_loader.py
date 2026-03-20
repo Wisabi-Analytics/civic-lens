@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Dict
+
 import pandas as pd
 
 RAW_PATH = Path('data/raw/ec/dcleapil_2006_2024.csv')
@@ -23,6 +25,45 @@ def _era(year: int) -> str:
 
 def _ward_code_vintage(year: int) -> str:
     return 'WD22CD' if year == 2022 else 'WD18CD'
+
+
+def _load_lad_lookup(path: Path, ward_col: str, lad_col: str) -> Dict[str, str]:
+    df = pd.read_parquet(path, columns=[ward_col, lad_col])
+    df[ward_col] = df[ward_col].astype('string').str.strip()
+    df[lad_col] = df[lad_col].astype('string')
+    return df.set_index(ward_col)[lad_col].to_dict()
+
+
+def _filter_scope(df: pd.DataFrame) -> pd.DataFrame:
+    wl_18 = _load_lad_lookup(
+        Path('data/interim/ward_lad_dec2018.parquet'),
+        'WD18CD',
+        'LAD18CD',
+    )
+    wl_22 = _load_lad_lookup(
+        Path('data/interim/ward_lad_dec2022.parquet'),
+        'WD22CD',
+        'LAD22CD',
+    )
+
+    df['ward_code'] = df['ward_code'].astype('string').str.strip()
+    mask_2022 = df['year'] == 2022
+    df['lad_code'] = None
+    df.loc[~mask_2022, 'lad_code'] = (
+        df.loc[~mask_2022, 'ward_code'].map(wl_18)
+    )
+    df.loc[mask_2022, 'lad_code'] = (
+        df.loc[mask_2022, 'ward_code'].map(wl_22)
+    )
+
+    valid_prefixes = ('E08', 'E09')
+    valid = df['lad_code'].str.startswith(valid_prefixes, na=False)
+    dropped = (~valid).sum()
+    if dropped > 0:
+        print(f'INFO: Dropping {dropped} DCLEAPIL rows outside E08/E09 scope')
+    df = df[valid].copy()
+    df = df.drop(columns=['lad_code'], errors='ignore')
+    return df
 
 
 def load_dcleapil() -> pd.DataFrame:
@@ -70,17 +111,44 @@ def load_dcleapil() -> pd.DataFrame:
     df['source_dataset'] = df['year'].map(lambda y: f'dcleapil_{y}')
     df['ward_code_vintage'] = df['year'].map(_ward_code_vintage)
 
+    df['ward_code'] = df['GSS'].astype('string').str.strip()
+    df = _filter_scope(df)
+    df = df.drop(columns=['GSS'], errors='ignore')
+
     df['candidate_name'] = (
         df['first_name'].fillna('')
         + ' '
         + df['surname'].fillna('')
     ).str.strip()
 
+    # Deduplicate DCLEAPIL 2018: prefer DC-LEAP rows over DC duplicates
+    if 'dataset' in df.columns:
+        df_2018 = df[df['year'] == 2018].copy()
+        df_other = df[df['year'] != 2018].copy()
+
+        dedup_key = ['year', 'ward_code', 'party_id', 'candidate_name']
+        available_key = [col for col in dedup_key if col in df_2018.columns]
+
+        priority = {'DC-LEAP': 0, 'DC': 1, 'LEAP': 2}
+        df_2018['_dataset_priority'] = df_2018['dataset'].map(priority).fillna(9)
+        df_2018 = df_2018.sort_values('_dataset_priority')
+        before = len(df_2018)
+        df_2018 = df_2018.drop_duplicates(subset=available_key, keep='first')
+        dropped = before - len(df_2018)
+        df_2018 = df_2018.drop(columns=['_dataset_priority'])
+
+        if dropped > 0:
+            print(
+                f'INFO: DCLEAPIL 2018 dedup dropped {dropped} rows superseded by DC-LEAP'
+            )
+        df = pd.concat([df_other, df_2018], ignore_index=True)
+    else:
+        print("WARNING: 'dataset' column missing; DCLEAPIL 2018 dedup skipped")
+
     column_map = {
         'year': 'election_year',
         'council': 'authority_name_raw',
         'ward': 'ward_name_raw',
-        'GSS': 'ward_code',
         'party_id': 'party_id',
         'party_name': 'party_raw',
         'votes_cast': 'votes',
