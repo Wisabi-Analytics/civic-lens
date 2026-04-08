@@ -10,14 +10,14 @@ All raw data files in `data/raw/`. Licence and provenance recorded here for audi
 
 | Field | Value |
 |---|---|
-| **File** | `ec/dcleapil_2006_2024.csv` + `ec/dcleapil_party_coding.csv` + `ec/dcleapil_variable_descriptions.csv` |
+| **File** | `ec/dcleapil_2006_2024.csv` + `ec/DCLEAPIL_v1_0_Party_coding.csv` + `ec/DCLEAPIL_v1_0_Variable_descriptions.csv` |
 | **Source** | Figshare — Jason Leman (2025) |
 | **URL** | https://figshare.com/articles/dataset/DCLEAPIL_v1_0_British_local_election_results_dataset_2006-2024/28920872 |
 | **Licence** | CC BY-SA 4.0 |
 | **Citation** | Leman, Jason (2025) DCLEAPIL_v1.0, Figshare |
 | **Download date** | 2026-03-11 |
 | **Coverage** | British local government principal authority elections 2006–2024 |
-| **Used for** | **Training window (2014, 2015, 2016)** and **2018 backtest origin** — primary source across the full calibration chain; cross-check for 2022 results |
+| **Used for** | **Training window (2014, 2015, 2016)** and **2018 backtest origin** — primary source for pre-2022 chain steps; 2022 rows retained as descriptive-only cross-checks against Commons 2022 |
 | **Notes** | Draws on Andrew Teale's LEAP dataset (2006–2021) and Democracy Club (2019–2024). `leap_only` era (2014/2015): LEAP-sourced only — materially degraded electorate, turnout, and by-election coverage. `dc_leap` era (2016+): DC-LEAP merged. All required years are present in the full file — no separate extract needed. See READ_ME.txt in same folder. |
 
 ---
@@ -32,7 +32,7 @@ All raw data files in `data/raw/`. Licence and provenance recorded here for audi
 | **Download date** | 2026-03-20 |
 | **Coverage** | 661 party records; 17 columns |
 | **Used for** | Party standardisation in Phase 5. Join `party_id` (main file) → `EC_Ref1` (this file) to get `Type`, `Type2`, `ILP` flag, and canonical `Party Name`. |
-| **Notes** | Primary join key is EC_Ref1 (not MergePartyID). 3 unmatched cases require fallback: NR_Ind/NR_IndLR → IND; joint-party:15-64 → EC_Ref2 join. ILP flag (Yes/No) required for challenger identification logic in scenario engine. |
+| **Notes** | Primary join key is EC_Ref1 (not MergePartyID). Loader builds dual-key lookup from EC_Ref1 and EC_Ref2, then applies manual overrides for 3 unmatched cases: NR_Ind/NR_IndLR → IND; joint-party:15-64 → IND_LOCAL (ILP). ILP flag (Yes/No) required for challenger identification logic in scenario engine. |
 
 ---
 
@@ -75,9 +75,9 @@ All raw data files in `data/raw/`. Licence and provenance recorded here for audi
 | **URL** | https://commonslibrary.parliament.uk/data/parliament-elections-data/2022-local-elections-handbook-and-dataset/ |
 | **Licence** | Open Parliament Licence v3.0 |
 | **Download date** | 2026-03-11 |
-| **Coverage** | England local elections, 5 May 2022 — 18,481 candidate rows, 3,611 ward rows |
-| **Used for** | **Backtest target** — actual 2022 results against which the 2014→2018 trained model is measured; cross-checked against DCLEAPIL |
-| **Notes** | Primary source for Tier 1 (metro boroughs) and Tier 2 (London boroughs). Sourced from local authority websites and direct correspondence. Quality cross-checked against DCLEAPIL. |
+| **Coverage** | England local elections, 5 May 2022 (raw workbook is national coverage; pipeline ingests and filters to Civic Lens in-scope authorities) |
+| **Used for** | **Backtest target** — actual 2022 results against which the 2014→2018 trained model is measured; canonical 2022 source in pipeline |
+| **Notes** | Sourced from local authority websites and direct correspondence. Phase 4 loader applies E08/E09 scope filtering before interim writes; DCLEAPIL 2022 remains descriptive-only for QA cross-checks. |
 
 ---
 
@@ -136,7 +136,7 @@ All raw data files in `data/raw/`. Licence and provenance recorded here for audi
 
 | Field | Value |
 |---|---|
-| **File** | `ons/ward_lad_lookup_may2022.csv` |
+| **File** | `ons/ward_lad_lookup_may2022.xlsx` |
 | **Source** | ONS Open Geography Portal |
 | **URL** | https://geoportal.statistics.gov.uk/datasets/ons::ward-to-local-authority-district-may-2022-lookup-in-the-uk |
 | **Licence** | OGL v3 |
@@ -237,9 +237,9 @@ All raw data files in `data/raw/`. Licence and provenance recorded here for audi
 | **URL** | https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019 |
 | **Licence** | OGL v3 |
 | **Download date** | 2026-03-11 |
-| **Coverage** | All English local authority districts — IMD 2019 scores and deciles |
+| **Coverage** | All English local authority districts — IMD 2019 scores and ranks (no raw decile column) |
 | **Used for** | Scenario S4 only — identifying wards in IMD deciles 1–3 for the deprivation turnout shift scenario (ΔT = +3pp). **Descriptive overlay only — IMD does not infer, adjust, or predict vote share.** |
-| **Notes** | File 10 from the full IoD 2019 release: `File_10_-_IoD2019_Local_Authority_District_Summaries_(lower-tier).xlsx`. No newer vintage used — IMD is published infrequently and 2019 is the current standard for this analysis period. |
+| **Notes** | File 10 from the full IoD 2019 release: `File_10_-_IoD2019_Local_Authority_District_Summaries_(lower-tier).xlsx`. Pipeline derives `imd_decile` from rank (qcut 10 bins). No newer vintage used — IMD is published infrequently and 2019 is the current standard for this analysis period. |
 
 ---
 

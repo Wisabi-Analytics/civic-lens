@@ -22,7 +22,9 @@ Document explicitly:
 	•	2021 included in raw storage for completeness but excluded from calibration
 	•	Tier 3 ward-level analysis only where harmonisation is defensible
 	•	all-out elections and major boundary changes force borough-level fallback
-	•	Tiers 1 and 2 have no 2025 backtest; uncertainty borrowed from Tier 3 with explicit caveat
+	•	calibration chain locked to 2014→2018 (training), 2018→2022 (backtest), 2022→2026 (prediction)
+	•	2025 retained for provenance only and not used in calibration or uncertainty transfer
+	•	City of London treated as borough-only due to block voting and non-standard franchise
 
 0.3 Freeze repo structure
 
@@ -196,10 +198,13 @@ Create loaders for:
 	•	DCLEAPIL
 	•	Commons Library 2021
 	•	Commons Library 2022
-	•	Commons Library 2025
 	•	ONS ward/LAD lookups
 	•	LAD/region lookup
 	•	IMD
+
+Notes:
+	•	Commons Library 2025 remains in raw storage for provenance only and is not loaded into the pipeline
+	•	interim outputs are scope-filtered to the Civic Lens authority universe rather than preserving all national rows
 
 4.2 Save standardised interim outputs
 
@@ -271,18 +276,19 @@ Attach:
 6.2 Build authority dimension
 
 Produce a clean dimension table containing:
-	•	all in-scope authorities
-	•	excluded authorities
-	•	election-active flags
+	•	all 69 historically covered authorities in the project universe
+	•	64 election-active-in-2026 flags
+	•	excluded metro authorities carried explicitly in metadata
 	•	borough/London/Yorkshire typing
 
 6.3 Verify scope membership
 
 Assert:
-	•	exactly 32 metro boroughs in scope
-	•	exactly 32 London boroughs in scope
-	•	exactly 5 Yorkshire councils in scope
-	•	excluded metro boroughs absent from active 2026 scope
+	•	exactly 32 metropolitan boroughs are election-active in 2026
+	•	exactly 32 London boroughs are in the project universe
+	•	exactly 5 West Yorkshire councils are in the project universe
+	•	total authority dimension row count = 69
+	•	excluded metro boroughs absent from the active 2026 subset, not from historical storage
 
 Deliverables
 	•	enriched clean results
@@ -302,9 +308,13 @@ Goal: make cross-cycle ward comparison defensible and explicit.
 
 Match across vintages using:
 	1.	exact code match
-	2.	exact cleaned-name match
-	3.	reviewed fallback
+	2.	exact cleaned-name match where defensible
+	3.	reviewed/manual fallback where genuinely needed
 	4.	borough-only fallback
+
+Current implementation note:
+	•	the present concordance artifact is dominated by exact code matches plus borough fallback / uncalibrated rows
+	•	name-match and reviewed paths remain part of the design space but may not appear in the processed output if the data does not require them
 
 7.2 Create concordance table
 
@@ -325,6 +335,10 @@ Explicitly flag:
 	•	split/merge wards
 	•	unmatched wards
 	•	borough-only authorities
+
+Confirmed edge-case flags:
+	•	City of London ward-level comparisons downgraded to borough-only
+	•	all-out 2026 borough list aligned to the decisions log, not left provisional
 
 7.4 Output
 
@@ -381,41 +395,58 @@ Exit criteria
 
 ⸻
 
-Phase 9 — Baseline Metrics
+Phase 9 — Baseline and Backtest Actuals
 
-Goal: compute the historical baseline of “normal” volatility.
+Goal: compute the historical baseline and the realised backtest actuals that Phase 10 calibration consumes.
 
-9.1 Compute 2018→2022 metrics
+9.1 Compute training metrics (2014→2018)
 
-For all in-scope tiers, respecting analysis_level.
+For all historically covered authorities:
+	•	ward-level rows where concordance supports defensible comparison
+	•	borough-level rows using ward-composite training baselines
 
-9.2 Output baseline file
+9.2 Compute backtest actuals (2018→2022)
+
+For all historically covered authorities:
+	•	borough-level rows for every authority
+	•	ward-level backtest rows only if valid 2018→2022 concordance pairs exist
+
+Current limitation:
+	•	the present processed concordance contains no 2018→2022 ward pairs, so backtest outputs are borough-only under the current artifact set
+
+9.3 Output Phase 9 files
 
 Create:
-	•	data/processed/baseline_metrics.csv
+	•	data/processed/training_metrics.csv
+	•	data/processed/backtest_actuals_2022.csv
+	•	data/processed/party_swings_training.csv
+	•	data/processed/party_swings_backtest.csv
 
-9.3 Review outputs
+9.4 Review outputs
 
-Check whether values are plausible by borough and tier.
+Check whether values are plausible by borough and tier and document any structural limitations.
 
 Deliverables
-	•	baseline metrics dataset
-	•	exploratory visuals/notebook
+	•	training metrics dataset
+	•	backtest actuals dataset
+	•	party swing files
+	•	exploratory notebook
 
 Exit criteria
-	•	Part 1 can be written from actual metric outputs.
+	•	Part 1 can be written from actual training outputs
+	•	Phase 10 has both training metrics and backtest actuals
 
 ⸻
 
-Phase 10 — Tier-Specific Calibration and Shock Logic
+Phase 10 — Calibration and Shock Logic
 
-Goal: calibrate responsibly and document tier differences upfront.
+Goal: calibrate responsibly from the locked empirical chain and document any remaining authority-level limitations.
 
-10.1 Tier 3 backtest
+10.1 Empirical calibration
 
-Use Tier 3 only:
-	•	2018→2022 baseline
-	•	compare against actual 2022→2025 outcomes
+Use the locked chain:
+	•	2014→2018 training metrics
+	•	compare against realised 2018→2022 backtest actuals
 
 Output:
 	•	artifacts/backtest_results.csv
@@ -426,15 +457,15 @@ Metrics:
 	•	MAE
 	•	P10/P50/P90 coverage
 
-10.2 Document Tier 1 and 2 limitation
+10.2 Document residual limitations
 
 State clearly in docs/METHODOLOGY.md:
-	•	no 2025 election exists for metro/London boroughs
-	•	no direct backtest available
-	•	uncertainty bands transferred from Tier 3 backtest
-	•	this is a limitation
+	•	no 2025 election is used anywhere in the calibration chain
+	•	backtest is measured on the 2018→2022 transition
+	•	ward-level backtest coverage may be unavailable where concordance cannot support it
+	•	authority-level fallbacks and null-metric rows are explicit and documented
 
-10.3 Compute Tier 3 shock metrics
+10.3 Compute shock metrics
 
 Create:
 	•	data/processed/shock_metrics.csv
@@ -453,7 +484,7 @@ Deliverables
 	•	S5 decision artefact
 
 Exit criteria
-	•	Uncertainty logic is empirical where possible and explicit where transferred.
+	•	Uncertainty logic is empirical and explicitly documented where coverage limitations require fallback
 
 ⸻
 
