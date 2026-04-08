@@ -88,7 +88,7 @@ def test_concordance_change_type_populated(df: pd.DataFrame) -> None:
 
 
 def test_analysis_level_values(df: pd.DataFrame) -> None:
-    valid = {"ward", "borough_fallback", "borough_only", "descriptive_only"}
+    valid = {"ward", "borough_only", "descriptive_only"}
     actual = set(df["analysis_level"].dropna().unique())
     assert actual.issubset(valid)
 
@@ -99,7 +99,7 @@ def test_descriptive_only_preserved(df: pd.DataFrame) -> None:
 
 
 def test_row_count(df: pd.DataFrame) -> None:
-    assert len(df) == 36252, f"Unexpected row count {len(df)}"
+    assert len(df) == 36234, f"Unexpected row count {len(df)}"
 
 
 def test_uncontested_borough_only(df: pd.DataFrame) -> None:

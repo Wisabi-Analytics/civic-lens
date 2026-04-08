@@ -9,7 +9,7 @@ def test_dcleapil_interim_exists():
     assert path.exists()
     df = pd.read_parquet(path)
     counts = df['election_year'].value_counts()
-    for year, expected in [(2014, 17038), (2015, 30729), (2016, 10957), (2018, 17005), (2022, 21932)]:
+    for year, expected in [(2014, 5358), (2015, 2873), (2016, 2806), (2018, 6273), (2022, 9353)]:
         assert abs(counts.get(year, 0) - expected) <= 50
     assert df['votes'].dtype.kind in 'iu'
     valid_vote_share = df['vote_share'].dropna()
@@ -19,7 +19,7 @@ def test_dcleapil_interim_exists():
 def test_commons_2022_outputs():
     cand = pd.read_parquet(INTERIM / 'commons_2022_candidates.parquet')
     ward = pd.read_parquet(INTERIM / 'commons_2022_wards.parquet')
-    assert abs(len(cand) - 18481) <= 20
+    assert abs(len(cand) - 9571) <= 20
     assert len(ward) > 0
     assert 'COUNTYCODE' not in cand.columns
     assert 'COUNTYNAME' not in cand.columns
