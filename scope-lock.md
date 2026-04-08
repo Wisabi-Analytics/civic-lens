@@ -37,17 +37,21 @@ These councils are excluded solely because no election occurs. They are not excl
 
 ---
 
-## All-Out Election Flag (Tier 1)
+## All-Out Election Flag (Confirmed 2026)
 
-**13 of the 32 election-active metropolitan boroughs hold all-out elections in 2026** due to LGBCE boundary reviews (full council elected, not the usual one-third).
+**Six in-scope authorities are flagged `all_out_2026` in 2026** (full council elected, not the usual staggered cycle):
+- Barnsley (`E08000016`)
+- Birmingham (`E08000025`)
+- St Helens (`E08000013`)
+- Coventry (`E08000026`)
+- Calderdale (`E08000033`)
+- Kirklees (`E08000034`)
 
-For all 13 councils:
+For all six authorities:
 - `analysis_level = borough_only` in `clean_election_results.csv`
 - Ward-level longitudinal comparisons are NOT attempted
 - Concordance table includes boundary change type = `all_out_lgbce`
 - Listed in `docs/DECISIONS_LOG.md`
-
-*(Exact list of 13 councils to be confirmed during Phase A data acquisition)*
 
 ---
 
