@@ -1,0 +1,2 @@
+median_vol_2014_2018,median_vol_2018_2022,median_delta_fi_2014_2018,median_delta_fi_2018_2022,n_fi_increased,n_comparable,n_scope,n_all_with_metrics,n_active_2026,n_historical_only_2026,n_metro_active,n_london_active,n_wy_active,pearson_r_2018_2022,pearson_n,pearson_subset_note
+11.950101,41.795298,-0.32743355475316527,1.7701082655817717,66,67,68,67,64,4,31,32,5,-0.0082,67,window=2018→2022; City of London excluded; turnout_delta and volatility_score non-null only
