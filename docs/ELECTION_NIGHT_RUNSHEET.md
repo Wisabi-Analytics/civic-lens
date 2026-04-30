@@ -23,7 +23,9 @@
 
 **Step 1 — Ingest batch results**
 ```bash
-python src/calibration/run_backtest.py --live [path/to/results.csv]
+# Placeholder until the election-night ingest/audit pipeline is implemented.
+# Do not use the removed src/calibration/run_backtest.py path.
+python src/audit/audit_results.py artifacts/scenario_outputs.csv [actual_results.csv]
 ```
 
 **Step 2 — Refresh Tableau**

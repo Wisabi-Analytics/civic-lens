@@ -1,6 +1,6 @@
 # Methodology
 
-**Status:** Updated March 2026 — calibration chain revised from 2018→2022→2025 to 2014→2018→2022. All affected sections rewritten.
+**Status:** Updated May 2026 — calibration chain revised from 2018→2022→2025 to 2014→2018→2022; Phase 12 uncertainty uses tier-level mean-centered backtest error pools.
 
 ---
 
@@ -17,9 +17,9 @@ TRAINING WINDOW        BACKTEST                PREDICTION
 
 **Training window (2014–2018):** The three by-thirds election years immediately preceding the 2018 endpoint (2014, 2015, 2016) form the training window. Because metro and London boroughs elect by thirds, each ward is contested once every three years — its training data point is its most recent result from the {2014, 2015, 2016} cohort, as assigned by the concordance table.
 
-**Backtest (2018→2022):** The trained model's predictions for the 2018→2022 transition are compared against the actual 2022 results. Forecast error (RMSE, MAE, P10–P90 empirical coverage) is measured borough by borough across all in-scope Tier 1, Tier 2, and Tier 3 authorities. This produces an empirically grounded, borough-specific error distribution.
+**Backtest (2018→2022):** The trained model's predictions for the 2018→2022 transition are compared against the actual 2022 results. Forecast error (RMSE, MAE, P10–P90 empirical coverage) is measured borough by borough across all in-scope Tier 1, Tier 2, and Tier 3 authorities, then pooled by tier and metric for Phase 12 uncertainty sampling.
 
-**Prediction (2022→2026):** The calibrated error distributions are used to generate uncertainty bands for 2026 via bootstrap sampling (N = 2,000 iterations, RNG seed = 20260430).
+**Prediction (2022→2026):** The calibrated tier/metric error pools are mean-centered and used to generate uncertainty bands for 2026 via bootstrap sampling (N = 2,000 iterations, RNG seed = 20260430).
 
 **All three tiers are calibrated from the same backtest.** No cross-tier proxy transfer is required. No 2025 data is used at any stage of the chain.
 
@@ -52,7 +52,7 @@ Six metrics — formulas frozen at Phase 0 commit. See `README.md`.
 
 Six scenarios (S0–S5) frozen in `docs/SCENARIO_DEFINITIONS.md`.
 
-**Challenger party definition:** The party with the highest absolute swing gain in the **2018→2022** transition per borough. This is the most recent available cycle. Tie-break: higher 2022 absolute vote share. IND candidates are pooled before challenger identification.
+**Challenger party definition:** The party with the highest absolute swing gain in the **2018→2022** transition per borough. This is the most recent available cycle. Tie-break: higher 2022 absolute vote share. Party-family normalisation is applied before challenger selection. `party_group = Independent` candidates are pooled as `IND`; `party_group = ILP` candidates are pooled separately as `ILP`.
 
 ---
 
@@ -70,7 +70,7 @@ Full harmonisation decisions: `data/processed/DATA_DICTIONARY.md`
 
 **Iterations:** 2,000 per scenario per borough (frozen).
 
-**Bootstrap source:** Borough-specific forecast error distributions from the 2014→2018 / 2018→2022 backtest. For boroughs with insufficient history (< 2 usable cycles, e.g. recently reorganised authorities), fall back to tier-level pooled distribution. Every fallback case is documented in `artifacts/calibration_report.md`.
+**Bootstrap source:** Tier-level forecast error pools from the 2014→2018 / 2018→2022 backtest. Errors are measured at borough level, grouped by tier and metric, then mean-centered before sampling so scenario medians remain anchored to their deterministic point estimates. Borough-specific reweighting is not used because the current calibration contains only one backtest error per authority.
 
 **Independence assumption:** Boroughs simulated independently. No cross-borough correlation modelled.
 
@@ -94,15 +94,15 @@ The training window (2014–2018) straddles the Brexit referendum (June 2016) an
 
 **All publications referencing 2026 uncertainty bands must include:**
 
-> *"Uncertainty bands are calibrated from borough-specific forecast errors measured across the 2014→2022 window (training: 2014→2018; backtest: 2018→2022). The training period predates the 2025 Reform surge. Uncertainty bands may understate right-wing volatility in areas of high recent Reform support. This is a stated assumption, not an observed measurement."*
+> *"Uncertainty bands are calibrated from tier-level, mean-centered historical forecast errors measured across the 2014→2022 window (training: 2014→2018; backtest: 2018→2022). The training period predates the 2025 Reform surge. Uncertainty bands may understate right-wing volatility in areas of high recent Reform support. This is a stated assumption, not an observed measurement."*
 
 **3. Borough-level fallback rate**
 
 The extended 8–12 year concordance window produces a higher rate of borough-level fallback (where ward boundaries changed materially between 2014 and 2022) than a 4-year window would. Ward-level analysis is more granular; borough-level fallback is honest. The concordance table documents every downgrade decision.
 
-**4. Boroughs with insufficient calibration history**
+**4. No authority-specific uncertainty reweighting**
 
-Authorities that have undergone significant reorganisation or had all-out LGBCE elections within the training window may not have two complete comparable cycles. These fall back to tier-level pooled error distributions, documented in `artifacts/calibration_report.md`.
+The calibration report measures authority-level backtest errors, but Phase 12 samples from tier-level pools only. One historical error per authority is too little evidence to justify borough-specific reweighting without a formal hierarchical model. This choice avoids overfitting uncertainty intervals to noisy single observations.
 
 **5. Calibration quality is what it is**
 

@@ -9,7 +9,7 @@ Key decisions with full rationale and rejected alternatives.
 | Baseline year | 2018 (not 2021) | 2021 = pandemic outlier, would conflate two disruptions |
 | Ward granularity | Borough-level for Tier 1+2 | Harmonisation cost too high; borough analysis is fully valid |
 | Monte Carlo iterations | 2,000 | Calibration logic matters, not simulation volume |
-| Bootstrap source | Borough-specific error distributions | National pool too coarse; each borough has its own volatility pattern |
+| Bootstrap source | Tier-level mean-centered backtest error pools | National pool too coarse; one borough-specific error is too noisy for authority reweighting without a formal model |
 | Borough independence | No correlation modelling | Too few cycles to estimate reliable covariance for 64 boroughs |
 | Volatility Score weights | Equal (0.5 swing / 0.5 ΔFI) | No strong prior for privileging either component |
 | Seat Change in scenarios | Historical data only, not simulated | Seat projections would contradict "not a forecast" positioning |
@@ -27,6 +27,11 @@ Key decisions with full rationale and rejected alternatives.
 | Phase 11 historical vs prediction scope | Historical charts include valid non-active councils; prediction scope still excludes non-2026 election councils | `election_active_2026=False` means excluded from 2026 forecast outputs, not from historical baseline analysis where metrics exist. Doncaster/Liverpool/Wirral stay in historical charts with visual flag. Rotherham is omitted from metric charts where 2018/2022 pair is structurally unavailable. |
 | data_source_era boundary | 2015/2016 (not pre-2019) | DCLEAPIL dataset field confirms: 2014/2015 = LEAP only; 2016 = DC-LEAP first merge year. The pre-2019 label used in earlier drafts was wrong. |
 | DCLEAPIL file architecture | One file (2006–2024), filtered at load time | Uploads were slices for size reasons only. Pipeline reads full file, drops null-year rows, filters to {2014, 2015, 2016, 2018, 2022}. Encoding: UTF-8-BOM (utf-8-sig). |
+| Phase 10.5 party-family normalisation | Metric computation uses `metric_party_family`; challenger identification uses `challenger_party_family`; display labels remain presentation-only | Labour/Labour Co-op and UKIP/Reform/Brexit Party ballot labels are analytical families, not separate metric parties. Metric computation preserves distinct local/independent labels; challenger identification pools `party_group = Independent` as `IND` and `party_group = ILP` as `ILP`. Phase 9, Phase 10, and Phase 11 artifacts were regenerated after this fix. |
+| Phase 12 S4 implementation caveat | Borough-level scenario engine applies S4 as turnout-only | Frozen S4 refers to ward-level vote-share adjustment, but Phase 12 output is borough-level. `turnout_delta` receives +3pp for IMD deciles 1-3; `delta_fi`, `volatility_score`, and `swing_concentration` copy S0 exactly. |
+| Phase 12 output metrics | Emit `turnout_delta`, `delta_fi`, `volatility_score`, and `swing_concentration`; omit `vote_share_swing` and absolute `fragmentation_index` | No calibrated error distribution exists for `vote_share_swing`. The calibrated FI pool is `delta_fi_error`, so publishing absolute FI intervals would be semantically wrong. |
+| Phase 12 bootstrap centering | Mean-center tier/metric error pools before sampling | Raw historical forecast errors would shift S0 medians away from null point estimates. Centering preserves scenario point estimates while retaining empirical uncertainty width. |
+| Phase 12 uncertainty pooling | Tier pools only; no borough-specific blending | A single borough historical error is not enough evidence for authority-specific reweighting. Tier pools are documented, auditable, and less vulnerable to one noisy observation. |
 
 *(Full entries including rejected alternatives maintained in WarBoard v3 Decisions Log tab)*
 

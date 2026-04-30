@@ -19,6 +19,8 @@ This definition uses 2018→2022 because it is the most recent complete observed
 
 **Critical implementation note — use derived vote shares only:** `vote_share_2022` and `vote_share_2018` must be taken from the `vote_share` field in `clean_election_results.csv`, which is always derived as `votes / total_valid_votes * 100`. The raw `vote_share` column in the DCLEAPIL source file is null for lower-ranked candidates in multi-member wards and must never be used directly. All swing calculations — in the challenger definition and in S0–S3 scenario shifts — operate on borough-level aggregates of the canonical derived percentages.
 
+**Phase 10.5 party-family note:** Challenger and metric calculations use explicit analytical party-family keys. Labour and Labour Co-operative labels are one `LAB` family. UKIP, Brexit Party, and Reform UK labels are one `REFORM` family. For metric computation, distinct local and independent party labels remain separate unless their cleaned labels are identical. For challenger identification only, `party_group = 'Independent'` is pooled as `IND`, and `party_group = 'ILP'` is pooled separately as `ILP`.
+
 ---
 
 ## Frozen Simulation Parameters
@@ -90,6 +92,8 @@ This definition uses 2018→2022 because it is the most recent complete observed
 
 **Implementation note — ward→LAD join required:** Because the IMD source is LAD-level, applying the +3pp shock requires joining every ward row in `clean_election_results.csv` to its parent LAD via `authority_code` before the decile filter can be applied. The join path is: `ward → authority_code` (already on every row) → `pd.qcut`-derived decile on `imd_2019_lad_summary.xlsx`. The turnout adjustment is then applied as a delta on the canonical `turnout_pct` field (which is already corrected for multi-member wards).
 
+**Phase 12 implementation caveat:** Phase 12 scenario outputs are borough-level. Until a ward-level scenario output layer exists, S4 is implemented as a turnout-only borough shock: `turnout_delta = +3pp` for authorities in IMD deciles 1-3, while vote-share-derived metrics copy S0 exactly.
+
 **Falsified by:** No material turnout increase in high-deprivation wards, or turnout increase does not translate to vote share change.
 
 ---
@@ -120,9 +124,11 @@ For each scenario × borough × metric combination, the simulation outputs:
 |---|---|
 | `scenario_id` | `S0` through `S5` |
 | `authority_code` | ONS LAD code |
-| `metric` | `vote_share_swing`, `turnout_delta`, `fragmentation_index`, `volatility_score`, `swing_concentration` (Seat Change is historical only — not simulated) |
+| `metric` | Phase 12 emits `turnout_delta`, `delta_fi`, `volatility_score`, `swing_concentration` (Seat Change is historical only — not simulated) |
 | `P10` | 10th percentile of simulated distribution |
 | `P50` | 50th percentile (median) |
 | `P90` | 90th percentile |
 
 Seat projections are not produced under any scenario.
+
+**Phase 12 output caveat:** `vote_share_swing` is omitted because there is no calibrated error distribution for that metric. `fragmentation_index` is not emitted as an absolute level; Phase 12 emits `delta_fi` because the calibrated backtest pool is `delta_fi_error`. `delta_fi` is also one component of `volatility_score`, so these fields should not be treated as independent evidence in publication analysis.
