@@ -1,3 +1,3 @@
-50.025756
-# London VI 90th percentile from 65 observations
-# 32 training + 33 backtest
+39.445534
+# London VI 90th percentile from 64 observations
+# 32 training + 32 backtest

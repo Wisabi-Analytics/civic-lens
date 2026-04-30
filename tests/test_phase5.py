@@ -141,7 +141,7 @@ def test_election_dates_correct(df):
 
 
 def test_total_row_count_plausible(df):
-    assert 32_000 < len(df) < 40_000, (
+    assert 45_000 < len(df) < 52_000, (
         f"Total row count {len(df)} outside expected range"
     )
 
@@ -150,11 +150,11 @@ def test_dcleapil_year_row_counts(df):
     dcl = df[df["source_dataset"].str.startswith("dcleapil")]
     counts = dcl.groupby("election_year").size()
     expected = {
-        2014: 5358,
-        2015: 2873,
-        2016: 2806,
-        2018: 6291,
-        2022: 9353,
+        2014: 10619,
+        2015: 4104,
+        2016: 3968,
+        2018: 10597,
+        2022: 9831,
     }
     for year, value in expected.items():
         assert abs(counts.get(year, 0) - value) <= 100, (

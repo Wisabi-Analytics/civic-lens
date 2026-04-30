@@ -77,6 +77,14 @@ def test_london_vi_cap_file_valid(s5_token):
         assert cap < 100
 
 
+def test_london_vi_cap_excludes_city_of_london(s5_token):
+    if s5_token == "S5_REMOVED":
+        return
+    content = open(VICP, "r", encoding="utf-8").read()
+    assert "64 observations" in content
+    assert "32 training + 32 backtest" in content
+
+
 def test_shock_metrics_row_count(sm, dim, s5_token):
     expected_scenarios = 5 if s5_token == "S5_REMOVED" else 6
     assert len(sm) == len(dim) * expected_scenarios
@@ -115,6 +123,29 @@ def test_s5_rules(sm, s5_token):
     london = s5[s5["tier"] == 2]
     assert non_london["vi_cap"].isna().all()
     assert london["vi_cap"].notna().all()
+
+
+def test_challenger_labels_are_family_normalised(sm):
+    s1 = sm[(sm["scenario_id"] == "S1") & (sm["election_active_2026"] == True)]
+    forbidden = {
+        "Labour Party",
+        "Labour And Cooperative Party",
+        "Reform Uk",
+        "Uk Independence Party (Ukip)",
+        "UK Independence Party (Ukip)",
+        "Brexit Party",
+    }
+    observed = set(s1["challenger_party"].dropna())
+    assert not (forbidden & observed)
+
+
+def test_lab_challenger_share_guard(sm):
+    s1 = sm[(sm["scenario_id"] == "S1") & (sm["election_active_2026"] == True)]
+    lab_share = (s1["challenger_party"] == "LAB").mean()
+    # LAB can be the true mechanical challenger after Labour/Labour-Co-op are
+    # correctly combined. The artifact was near-universal raw Labour-Co-op
+    # challengers, not LAB appearing frequently.
+    assert lab_share < 0.75
 
 
 def test_calibration_report_exists_and_nonempty():

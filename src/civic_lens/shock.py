@@ -8,24 +8,39 @@ import pandas as pd
 
 sys.path.insert(0, "src")
 
+from civic_lens.party_normalise import challenger_party_family
+
 PROCESSED_DIR = Path("data/processed")
 INTERIM_DIR = Path("data/interim")
 ARTIFACTS_DIR = Path("artifacts")
 ARTIFACTS_DIR.mkdir(exist_ok=True)
 
 
-def load_inputs() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+def load_inputs() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     dim = pd.read_csv(PROCESSED_DIR / "authority_dimension.csv")
     psb = pd.read_csv(PROCESSED_DIR / "party_swings_backtest.csv")
     tm = pd.read_csv(PROCESSED_DIR / "training_metrics.csv")
     ba = pd.read_csv(PROCESSED_DIR / "backtest_actuals_2022.csv")
+    clean = pd.read_csv(
+        PROCESSED_DIR / "clean_election_results.csv",
+        usecols=["party_standardised", "party_group"],
+        low_memory=False,
+    )
     imd = pd.read_parquet(INTERIM_DIR / "imd_2019.parquet")
-    return dim, psb, tm, ba, imd
+    return dim, psb, tm, ba, clean, imd
 
 
 def derive_s5_cap(tm: pd.DataFrame, ba: pd.DataFrame) -> float | None:
-    tm_boro = tm[(tm["computation_level"] == "borough") & (tm["tier"] == 2)].copy()
-    ba_boro = ba[(ba["computation_level"] == "borough") & (ba["tier"] == 2)].copy()
+    tm_boro = tm[
+        (tm["computation_level"] == "borough")
+        & (tm["tier"] == 2)
+        & (tm["authority_code"] != "E09000001")
+    ].copy()
+    ba_boro = ba[
+        (ba["computation_level"] == "borough")
+        & (ba["tier"] == 2)
+        & (ba["authority_code"] != "E09000001")
+    ].copy()
     pool = pd.concat(
         [tm_boro["volatility_score"].dropna(), ba_boro["volatility_score"].dropna()],
         ignore_index=True,
@@ -49,18 +64,27 @@ def derive_s5_cap(tm: pd.DataFrame, ba: pd.DataFrame) -> float | None:
     return cap
 
 
-def _pool_party_name(name: str) -> str:
-    upper = str(name).upper().strip()
-    if upper.startswith("IND"):
-        return "IND"
-    if upper.startswith("ILP"):
-        return "ILP"
-    return str(name).strip()
+def _party_group_lookup(clean: pd.DataFrame) -> pd.DataFrame:
+    return (
+        clean[["party_standardised", "party_group"]]
+        .dropna()
+        .drop_duplicates()
+        .groupby("party_standardised", as_index=False)["party_group"]
+        .agg(lambda s: s.mode().iloc[0] if not s.mode().empty else s.iloc[0])
+    )
 
 
-def identify_challengers(psb: pd.DataFrame) -> pd.DataFrame:
+def identify_challengers(psb: pd.DataFrame, clean: pd.DataFrame | None = None) -> pd.DataFrame:
     psb_boro = psb[psb["computation_level"] == "borough"].copy()
-    psb_boro["party_bucket"] = psb_boro["party_standardised"].map(_pool_party_name)
+    party_col = "metric_party_family" if "metric_party_family" in psb_boro.columns else "party_standardised"
+    if "party_group" not in psb_boro.columns and clean is not None:
+        psb_boro = psb_boro.merge(_party_group_lookup(clean), on="party_standardised", how="left")
+    if "party_group" not in psb_boro.columns:
+        psb_boro["party_group"] = None
+    psb_boro["party_bucket"] = psb_boro.apply(
+        lambda row: challenger_party_family(row[party_col], row["party_group"]),
+        axis=1,
+    )
     grouped = (
         psb_boro.groupby(["authority_code", "party_bucket"], dropna=False)
         .agg(
@@ -161,9 +185,9 @@ def build_shock_metrics(
 
 
 def main() -> None:
-    dim, psb, tm, ba, imd = load_inputs()
+    dim, psb, tm, ba, clean, imd = load_inputs()
     cap = derive_s5_cap(tm, ba)
-    challengers = identify_challengers(psb)
+    challengers = identify_challengers(psb, clean)
     shock = build_shock_metrics(dim, challengers, imd, cap)
     print(f"Wrote {ARTIFACTS_DIR / 'london_vi_cap.txt'}")
     print(f"Wrote {PROCESSED_DIR / 'shock_metrics.csv'} ({len(shock)} rows)")

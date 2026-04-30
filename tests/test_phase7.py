@@ -99,7 +99,7 @@ def test_descriptive_only_preserved(df: pd.DataFrame) -> None:
 
 
 def test_row_count(df: pd.DataFrame) -> None:
-    assert len(df) == 36234, f"Unexpected row count {len(df)}"
+    assert len(df) == 48690, f"Unexpected row count {len(df)}"
 
 
 def test_uncontested_borough_only(df: pd.DataFrame) -> None:

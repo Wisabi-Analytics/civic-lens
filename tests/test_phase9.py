@@ -108,3 +108,35 @@ def test_party_swing_authority_sets_match(tm, pst, ba, psb):
     )
     assert set(pst["authority_code"]) == tm_computable
     assert set(psb["authority_code"]) == ba_computable
+
+
+def test_party_swings_include_metric_party_family(pst, psb):
+    for label, frame in [("training", pst), ("backtest", psb)]:
+        assert "metric_party_family" in frame.columns, f"{label}: missing metric_party_family"
+        assert frame["metric_party_family"].notna().all(), f"{label}: null metric_party_family"
+
+
+def test_labour_and_reform_ballot_labels_are_collapsed_for_metrics(pst, psb):
+    forbidden = {
+        "Labour Party",
+        "Labour And Cooperative Party",
+        "Reform Uk",
+        "Uk Independence Party (Ukip)",
+        "UK Independence Party (Ukip)",
+        "Brexit Party",
+    }
+    for label, frame in [("training", pst), ("backtest", psb)]:
+        observed = set(frame["metric_party_family"].dropna())
+        assert not (forbidden & observed), f"{label}: raw ballot labels still present"
+        assert "LAB" in observed
+        assert "REFORM" in observed
+
+
+def test_metric_party_family_preserves_local_independent_labels(psb):
+    local_independent_labels = {
+        "Independents For Direct Democracy",
+        "Independent Network",
+    }
+    observed = set(psb["metric_party_family"].dropna())
+    missing = local_independent_labels - observed
+    assert not missing, f"Local independent labels collapsed unexpectedly: {missing}"
