@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-import re
+import sys
 
 import numpy as np
 import pandas as pd
@@ -9,6 +9,14 @@ try:
     from scipy.stats import pearsonr as _scipy_pearsonr
 except ImportError:  # pragma: no cover - optional dependency fallback
     _scipy_pearsonr = None
+
+sys.path.insert(0, "src")
+
+from civic_lens.party_normalise import (
+    challenger_party_family,
+    display_party_label,
+    metric_party_family,
+)
 
 PROCESSED = Path("data/processed")
 REPORTS = Path("reports/tableau_data")
@@ -46,25 +54,6 @@ def _tier_label(tier: int) -> str:
     }.get(int(tier), "Unknown")
 
 
-def _normalize_party_label(name: str) -> str:
-    s = str(name).strip().lower()
-    if "labour" in s:
-        return "LAB"
-    if "conservative" in s:
-        return "CON"
-    if "liberal democrats" in s or s == "lib dem":
-        return "LD"
-    if "green party" in s or s == "green":
-        return "GREEN"
-    if "reform" in s or "uk independence" in s or "ukip" in s:
-        return "REFORM"
-    if "yorkshire party" in s:
-        return "YORKS"
-    if s.startswith("ind") or "independent" in s:
-        return "IND"
-    return "OTHER"
-
-
 def _party_color(label: str) -> str:
     return {
         "LAB": "#E4003B",
@@ -79,7 +68,10 @@ def _party_color(label: str) -> str:
 
 
 def _borough_turnout(clean: pd.DataFrame, year: int) -> pd.DataFrame:
-    df = clean[clean["election_year"] == year].copy()
+    df = clean[
+        (clean["election_year"] == year)
+        & (clean["analysis_level"] != "descriptive_only")
+    ].copy()
     ward = df[
         ["authority_code", "ward_code", "turnout_pct", "electorate"]
     ].drop_duplicates(subset=["authority_code", "ward_code"])
@@ -99,9 +91,16 @@ def _borough_turnout(clean: pd.DataFrame, year: int) -> pd.DataFrame:
 
 
 def _borough_fi(clean: pd.DataFrame, year: int) -> pd.DataFrame:
-    df = clean[clean["election_year"] == year].copy()
+    df = clean[
+        (clean["election_year"] == year)
+        & (clean["analysis_level"] != "descriptive_only")
+    ].copy()
+    df["metric_party_family"] = df.apply(
+        lambda row: metric_party_family(row["party_standardised"], row["party_group"]),
+        axis=1,
+    )
     grouped = (
-        df.groupby(["authority_code", "party_standardised"], dropna=False)["votes"]
+        df.groupby(["authority_code", "metric_party_family"], dropna=False)["votes"]
         .sum()
         .reset_index()
     )
@@ -112,7 +111,7 @@ def _borough_fi(clean: pd.DataFrame, year: int) -> pd.DataFrame:
             rows.append({"authority_code": auth, "fi_value": np.nan, "n_parties": 0})
             continue
         shares = {
-            str(r["party_standardised"]): (float(r["votes"]) / float(total_votes) * 100.0)
+            str(r["metric_party_family"]): (float(r["votes"]) / float(total_votes) * 100.0)
             for _, r in grp.iterrows()
             if pd.notna(r["votes"]) and r["votes"] > 0
         }
@@ -150,56 +149,62 @@ def build_tableau_authority_metrics(
     tm_b = tm[tm["computation_level"] == "borough"].copy()
     ba_b = ba[ba["computation_level"] == "borough"].copy()
 
-    fi_2018 = _borough_fi(clean, 2018).rename(columns={"fi_value": "fi_2018_calc", "n_parties": "n_parties_2018"})
-    fi_2022 = _borough_fi(clean, 2022).rename(columns={"fi_value": "fi_2022_calc", "n_parties": "n_parties_2022"})
-
-    start_year_by_auth = (
-        clean[clean["election_year"].isin([2014, 2015, 2016])]
-        .groupby("authority_code")["election_year"]
-        .max()
-        .reset_index()
-        .rename(columns={"election_year": "fi_start_year"})
+    base = dim.merge(
+        tm_b[
+            [
+                "authority_code",
+                "fi_training",
+                "fi_2018",
+                "delta_fi",
+                "turnout_training",
+                "turnout_2018",
+                "turnout_delta",
+                "volatility_score",
+                "swing_concentration",
+            ]
+        ],
+        on="authority_code",
+        how="left",
     )
-    fi_start_rows = []
-    for _, r in start_year_by_auth.iterrows():
-        auth = r["authority_code"]
-        year = int(r["fi_start_year"])
-        fi = _borough_fi(clean[clean["authority_code"] == auth], year)
-        val = fi["fi_value"].iloc[0] if not fi.empty else np.nan
-        fi_start_rows.append({"authority_code": auth, "fi_start_year": year, "fi_start": val})
-    fi_start = pd.DataFrame(fi_start_rows)
-
-    turn_start_rows = []
-    for _, r in start_year_by_auth.iterrows():
-        auth = r["authority_code"]
-        year = int(r["fi_start_year"])
-        t = _borough_turnout(clean[clean["authority_code"] == auth], year)
-        val = t["turnout_pct_year"].iloc[0] if not t.empty else np.nan
-        turn_start_rows.append({"authority_code": auth, "turnout_start_year": year, "turnout_start": val})
-    turn_start = pd.DataFrame(turn_start_rows)
-    turn_2018 = _borough_turnout(clean, 2018).rename(columns={"turnout_pct_year": "turnout_2018_calc"})
-    turn_2022 = _borough_turnout(clean, 2022).rename(columns={"turnout_pct_year": "turnout_2022_calc"})
-
-    base = dim.merge(fi_start, on="authority_code", how="left")
-    base = base.merge(fi_2018[["authority_code", "fi_2018_calc"]], on="authority_code", how="left")
-    base = base.merge(fi_2022[["authority_code", "fi_2022_calc"]], on="authority_code", how="left")
-    base = base.merge(turn_start, on="authority_code", how="left")
-    base = base.merge(turn_2018, on="authority_code", how="left")
-    base = base.merge(turn_2022, on="authority_code", how="left")
-    base = base.merge(tm_b[["authority_code", "volatility_score", "swing_concentration", "turnout_delta"]], on="authority_code", how="left")
     base = base.rename(
         columns={
+            "fi_training": "fi_training_phase9",
+            "fi_2018": "fi_2018_training_phase9",
+            "delta_fi": "delta_fi_2014_2018",
+            "turnout_training": "turnout_training_phase9",
+            "turnout_2018": "turnout_2018_training_phase9",
             "volatility_score": "vol_2014_2018",
             "swing_concentration": "sc_2014_2018",
             "turnout_delta": "turnout_delta_2014_2018",
         }
     )
-    base = base.merge(ba_b[["authority_code", "volatility_score", "swing_concentration", "turnout_delta"]], on="authority_code", how="left")
+    base = base.merge(
+        ba_b[
+            [
+                "authority_code",
+                "fi_2018",
+                "fi_2022",
+                "delta_fi",
+                "turnout_2018",
+                "turnout_2022",
+                "turnout_delta",
+                "volatility_score",
+                "swing_concentration",
+            ]
+        ],
+        on="authority_code",
+        how="left",
+    )
     base = base.rename(
         columns={
+            "fi_2018": "fi_2018_backtest_phase9",
+            "fi_2022": "fi_2022_phase9",
+            "delta_fi": "delta_fi_2018_2022",
+            "turnout_2018": "turnout_2018_backtest_phase9",
+            "turnout_2022": "turnout_2022_phase9",
+            "turnout_delta": "turnout_delta_2018_2022",
             "volatility_score": "vol_2018_2022",
             "swing_concentration": "sc_2018_2022",
-            "turnout_delta": "turnout_delta_2018_2022",
         }
     )
     base["vol_change"] = base["vol_2018_2022"] - base["vol_2014_2018"]
@@ -220,12 +225,12 @@ def build_tableau_authority_metrics(
             {
                 **common,
                 "window": "2014→2018",
-                "fi_start": r["fi_start"],
-                "fi_end": r["fi_2018_calc"],
-                "delta_fi": (r["fi_2018_calc"] - r["fi_start"]) if pd.notna(r["fi_2018_calc"]) and pd.notna(r["fi_start"]) else np.nan,
+                "fi_start": r["fi_training_phase9"],
+                "fi_end": r["fi_2018_training_phase9"],
+                "delta_fi": r["delta_fi_2014_2018"],
                 "volatility_score": r["vol_2014_2018"],
-                "turnout_start": r["turnout_start"],
-                "turnout_end": r["turnout_2018_calc"],
+                "turnout_start": r["turnout_training_phase9"],
+                "turnout_end": r["turnout_2018_training_phase9"],
                 "turnout_delta": r["turnout_delta_2014_2018"],
                 "swing_concentration": r["sc_2014_2018"],
                 "metric_available": bool(pd.notna(r["vol_2014_2018"])),
@@ -235,12 +240,12 @@ def build_tableau_authority_metrics(
             {
                 **common,
                 "window": "2018→2022",
-                "fi_start": r["fi_2018_calc"],
-                "fi_end": r["fi_2022_calc"],
-                "delta_fi": (r["fi_2022_calc"] - r["fi_2018_calc"]) if pd.notna(r["fi_2022_calc"]) and pd.notna(r["fi_2018_calc"]) else np.nan,
+                "fi_start": r["fi_2018_backtest_phase9"],
+                "fi_end": r["fi_2022_phase9"],
+                "delta_fi": r["delta_fi_2018_2022"],
                 "volatility_score": r["vol_2018_2022"],
-                "turnout_start": r["turnout_2018_calc"],
-                "turnout_end": r["turnout_2022_calc"],
+                "turnout_start": r["turnout_2018_backtest_phase9"],
+                "turnout_end": r["turnout_2022_phase9"],
                 "turnout_delta": r["turnout_delta_2018_2022"],
                 "swing_concentration": r["sc_2018_2022"],
                 "metric_available": bool(pd.notna(r["vol_2018_2022"])),
@@ -284,15 +289,27 @@ def build_tableau_party_swings(
         .agg(lambda s: s.mode().iloc[0] if not s.mode().empty else s.iloc[0])
     )
     df = df.merge(lookup, on="party_standardised", how="left")
+    if "metric_party_family" not in df.columns:
+        df["metric_party_family"] = df.apply(
+            lambda row: metric_party_family(row["party_standardised"], row["party_group"]),
+            axis=1,
+        )
+    df["challenger_party_family"] = df.apply(
+        lambda row: challenger_party_family(row["metric_party_family"], row["party_group"]),
+        axis=1,
+    )
 
     challengers = shock[shock["scenario_id"] == "S1"][["authority_code", "challenger_party"]].drop_duplicates()
     df = df.merge(challengers, on="authority_code", how="left")
-    df["is_challenger"] = df["party_standardised"] == df["challenger_party"]
+    df["is_challenger"] = df["challenger_party_family"] == df["challenger_party"]
     df["swing_abs_rank"] = (
         df.groupby("authority_code")["swing_pp"]
         .transform(lambda s: s.abs().rank(method="min", ascending=False))
     )
-    df["party_label_norm"] = df["party_standardised"].map(_normalize_party_label)
+    df["party_label_norm"] = df.apply(
+        lambda row: display_party_label(row["metric_party_family"], row["party_group"]),
+        axis=1,
+    )
     df["party_colour_hex"] = df["party_label_norm"].map(_party_color)
     return df[
         [
@@ -302,10 +319,13 @@ def build_tableau_party_swings(
             "tier_label",
             "region",
             "party_standardised",
+            "metric_party_family",
+            "challenger_party_family",
             "party_group",
             "vote_share_2018",
             "vote_share_2022",
             "swing_pp",
+            "challenger_party",
             "is_challenger",
             "swing_abs_rank",
             "party_label_norm",
@@ -317,11 +337,16 @@ def build_tableau_party_swings(
 def build_tableau_fi_timeseries(dim: pd.DataFrame, clean: pd.DataFrame) -> pd.DataFrame:
     target_years = [2014, 2015, 2016, 2018, 2022]
     clean = clean[clean["election_year"].isin(target_years)].copy()
+    clean = clean[clean["analysis_level"] != "descriptive_only"].copy()
     clean = clean[clean["authority_code"] != CITY_OF_LONDON].copy()
+    clean["metric_party_family"] = clean.apply(
+        lambda row: metric_party_family(row["party_standardised"], row["party_group"]),
+        axis=1,
+    )
 
     rows = []
     for (auth, year), grp in clean.groupby(["authority_code", "election_year"], dropna=False):
-        votes = grp.groupby("party_standardised", dropna=False)["votes"].sum()
+        votes = grp.groupby("metric_party_family", dropna=False)["votes"].sum()
         total = votes.sum()
         if pd.isna(total) or total <= 0:
             fi = np.nan

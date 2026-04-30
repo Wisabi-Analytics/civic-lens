@@ -16,6 +16,7 @@ from civic_lens.metrics import (
     volatility_score,
     vote_share_swing,
 )
+from civic_lens.party_normalise import metric_party_family
 
 LOGGER = logging.getLogger(__name__)
 
@@ -36,6 +37,10 @@ def load_inputs() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
 
 def build_ward_shares(active: pd.DataFrame, year: int) -> pd.DataFrame:
     sub = active[active["election_year"] == year].copy()
+    sub["metric_party_family"] = sub.apply(
+        lambda row: metric_party_family(row["party_standardised"], row["party_group"]),
+        axis=1,
+    )
     grouped = (
         sub.groupby(
             [
@@ -44,12 +49,13 @@ def build_ward_shares(active: pd.DataFrame, year: int) -> pd.DataFrame:
                 "tier",
                 "ward_code",
                 "ward_name_clean",
-                "party_standardised",
-                "party_group",
+                "metric_party_family",
             ],
             dropna=False,
         )
         .agg(
+            party_standardised=("party_standardised", "first"),
+            party_group=("party_group", "first"),
             votes=("votes", "sum"),
             total_valid_votes=("total_valid_votes", "first"),
             seats_won_party=("seats_won", "sum"),
@@ -83,7 +89,7 @@ def build_ward_turnout(active: pd.DataFrame, year: int) -> pd.DataFrame:
 def ward_shares_dict(wp: pd.DataFrame, auth: str, ward_code: str) -> dict[str, float]:
     rows = wp[(wp["authority_code"] == auth) & (wp["ward_code"] == ward_code)]
     return {
-        row["party_standardised"]: float(row["vote_share_pct"])
+        row["metric_party_family"]: float(row["vote_share_pct"])
         for _, row in rows.iterrows()
         if pd.notna(row["vote_share_pct"])
     }
@@ -96,7 +102,7 @@ def borough_shares_dict(wp: pd.DataFrame, auth: str) -> dict[str, float]:
     borough_vote_pool = rows["votes"].sum()
     if pd.isna(borough_vote_pool) or borough_vote_pool <= 0:
         return {}
-    party_votes = rows.groupby("party_standardised")["votes"].sum()
+    party_votes = rows.groupby("metric_party_family")["votes"].sum()
     return {
         party: float(votes) / float(borough_vote_pool) * 100
         for party, votes in party_votes.items()
@@ -268,6 +274,7 @@ def compute_training_metrics(
                     "computation_level": "ward",
                     "training_year": training_year,
                     "party_standardised": party,
+                    "metric_party_family": party,
                     "vote_share_training": shares_training.get(party, 0.0),
                     "vote_share_2018": shares_2018.get(party, 0.0),
                     "swing_pp": round(swing_pp, 6),
@@ -297,7 +304,11 @@ def compute_training_metrics(
             auth_training = auth_training.merge(latest_year, on="ward_code", how="left")
             composite = auth_training[auth_training["election_year"] == auth_training["latest_year"]].copy()
 
-            party_votes_training = composite.groupby("party_standardised")["votes"].sum()
+            composite["metric_party_family"] = composite.apply(
+                lambda row: metric_party_family(row["party_standardised"], row["party_group"]),
+                axis=1,
+            )
+            party_votes_training = composite.groupby("metric_party_family")["votes"].sum()
             training_vote_pool = composite["votes"].sum()
             if pd.notna(training_vote_pool) and training_vote_pool > 0:
                 shares_training_borough = {
@@ -339,6 +350,7 @@ def compute_training_metrics(
                             "computation_level": "borough",
                             "training_year": None,
                             "party_standardised": party,
+                            "metric_party_family": party,
                             "vote_share_training": shares_training_borough.get(party, 0.0),
                             "vote_share_2018": shares_2018_borough.get(party, 0.0),
                             "swing_pp": round(swing_pp, 6),
@@ -468,6 +480,7 @@ def compute_backtest_actuals(
                     "ward_code_2022": ward_2022,
                     "computation_level": "ward",
                     "party_standardised": party,
+                    "metric_party_family": party,
                     "vote_share_2018": shares_18.get(party, 0.0),
                     "vote_share_2022": shares_22.get(party, 0.0),
                     "swing_pp": round(swing_pp, 6),
@@ -511,6 +524,7 @@ def compute_backtest_actuals(
                             "ward_code_2022": None,
                             "computation_level": "borough",
                             "party_standardised": party,
+                            "metric_party_family": party,
                             "vote_share_2018": shares_18_borough.get(party, 0.0),
                             "vote_share_2022": shares_22_borough.get(party, 0.0),
                             "swing_pp": round(swing_pp, 6),
