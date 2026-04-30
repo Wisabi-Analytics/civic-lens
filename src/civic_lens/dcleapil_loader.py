@@ -56,6 +56,34 @@ def _filter_scope(df: pd.DataFrame) -> pd.DataFrame:
         df.loc[mask_2022, 'ward_code'].map(wl_22)
     )
 
+    # Fallback for authorities whose retroactive DCLEAPIL ward codes do not
+    # appear in current ward lookup vintages: recover LAD from authority name.
+    # This is only used when ward-code lookup failed.
+    lad_name = pd.read_csv('data/raw/ons/lad_region_lookup_apr2023.csv')[
+        ['LAD23CD', 'LAD23NM']
+    ].copy()
+    name_to_lad = dict(
+        zip(
+            lad_name['LAD23NM'].astype('string').str.strip().str.lower(),
+            lad_name['LAD23CD'].astype('string').str.strip(),
+        )
+    )
+    no_lad = df['lad_code'].isna() & df['council'].notna()
+    if no_lad.any():
+        fallback_lad = (
+            df.loc[no_lad, 'council']
+            .astype('string')
+            .str.strip()
+            .str.lower()
+            .map(name_to_lad)
+        )
+        recovered = int(fallback_lad.notna().sum())
+        if recovered > 0:
+            print(
+                f'INFO: Recovered {recovered} DCLEAPIL rows via council->LAD fallback'
+            )
+            df.loc[no_lad, 'lad_code'] = fallback_lad
+
     valid_prefixes = ('E08', 'E09')
     valid = df['lad_code'].str.startswith(valid_prefixes, na=False)
     dropped = (~valid).sum()

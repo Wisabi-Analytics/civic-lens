@@ -9,7 +9,7 @@ def test_dcleapil_interim_exists():
     assert path.exists()
     df = pd.read_parquet(path)
     counts = df['election_year'].value_counts()
-    for year, expected in [(2014, 5358), (2015, 2873), (2016, 2806), (2018, 6273), (2022, 9353)]:
+    for year, expected in [(2014, 10619), (2015, 4104), (2016, 3968), (2018, 10597), (2022, 9831)]:
         assert abs(counts.get(year, 0) - expected) <= 50
     assert df['votes'].dtype.kind in 'iu'
     valid_vote_share = df['vote_share'].dropna()

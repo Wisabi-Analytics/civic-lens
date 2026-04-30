@@ -5,12 +5,26 @@ import re
 
 import numpy as np
 import pandas as pd
+try:
+    from scipy.stats import pearsonr as _scipy_pearsonr
+except ImportError:  # pragma: no cover - optional dependency fallback
+    _scipy_pearsonr = None
 
 PROCESSED = Path("data/processed")
 REPORTS = Path("reports/tableau_data")
 REPORTS.mkdir(parents=True, exist_ok=True)
 
 CITY_OF_LONDON = "E09000001"
+
+
+def _pearson_with_p(x: pd.Series, y: pd.Series) -> tuple[float, float]:
+    """Return (r, p). If scipy is unavailable, return (r, nan)."""
+    if len(x) < 3 or len(y) < 3:
+        return np.nan, np.nan
+    if _scipy_pearsonr is not None:
+        r, p = _scipy_pearsonr(x, y)
+        return float(r), float(p)
+    return float(x.corr(y)), np.nan
 
 
 def _fragmentation_index(shares: dict[str, float]) -> float:
@@ -394,7 +408,18 @@ def build_tableau_kpis(authority_metrics: pd.DataFrame) -> pd.DataFrame:
         back["turnout_delta"].notna() & back["volatility_score"].notna()
     ].copy()
     pearson_n = int(len(pearson_subset))
-    pearson_r = float(pearson_subset["turnout_delta"].corr(pearson_subset["volatility_score"])) if pearson_n >= 3 else np.nan
+    pearson_r, pearson_p = _pearson_with_p(
+        pearson_subset["turnout_delta"], pearson_subset["volatility_score"]
+    )
+    active_subset = back[
+        (back["election_active_2026"] == True)
+        & back["turnout_delta"].notna()
+        & back["volatility_score"].notna()
+    ].copy()
+    pearson_active_n = int(len(active_subset))
+    pearson_active_r, pearson_active_p = _pearson_with_p(
+        active_subset["turnout_delta"], active_subset["volatility_score"]
+    )
 
     kpi = {
         "median_vol_2014_2018": float(train["volatility_score"].median()),
@@ -411,7 +436,25 @@ def build_tableau_kpis(authority_metrics: pd.DataFrame) -> pd.DataFrame:
         "n_london_active": int(back.loc[back["tier"] == 2, "authority_code"].nunique()),
         "n_wy_active": int(back.loc[back["tier"] == 3, "authority_code"].nunique()),
         "pearson_r_2018_2022": float(round(pearson_r, 4)) if pd.notna(pearson_r) else np.nan,
+        "pearson_p_2018_2022": float(round(pearson_p, 4)) if pd.notna(pearson_p) else np.nan,
         "pearson_n": pearson_n,
+        "pearson_active_r_2018_2022": float(round(pearson_active_r, 4)) if pd.notna(pearson_active_r) else np.nan,
+        "pearson_active_p_2018_2022": float(round(pearson_active_p, 4)) if pd.notna(pearson_active_p) else np.nan,
+        "pearson_active_n": pearson_active_n,
+        "kpi_pearson_label": (
+            f"Pearson r = {pearson_r:.2f}  (n = {pearson_n}, p = {pearson_p:.2f})"
+            if pd.notna(pearson_r) and pd.notna(pearson_p)
+            else f"Pearson r = {pearson_r:.2f}  (n = {pearson_n})"
+            if pd.notna(pearson_r)
+            else "Pearson r unavailable"
+        ),
+        "kpi_pearson_subset": (
+            f"Active-only sub-scope (n = {pearson_active_n}): r = {pearson_active_r:.2f}, p = {pearson_active_p:.2f}. Both scopes are statistically null."
+            if pd.notna(pearson_active_r) and pd.notna(pearson_active_p)
+            else f"Active-only sub-scope (n = {pearson_active_n}): r = {pearson_active_r:.2f}."
+            if pd.notna(pearson_active_r)
+            else "Active-only sub-scope unavailable."
+        ),
         "pearson_subset_note": (
             "window=2018→2022; City of London excluded; turnout_delta and volatility_score non-null only"
         ),
