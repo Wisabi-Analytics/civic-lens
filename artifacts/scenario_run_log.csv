@@ -1,0 +1,226 @@
+scenario_id,authority_code,metric,event_type,detail
+S0,E08000001,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000002,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000003,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000004,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S2,E08000004,shares,share_clamped,Clamped ['ILP'] to zero
+S0,E08000005,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000006,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000007,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000008,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000009,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000010,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000011,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000013,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000014,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000016,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000019,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000021,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000022,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000023,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000024,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000025,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000026,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000027,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000028,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000029,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000030,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000031,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000032,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000033,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000034,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000035,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000036,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E08000037,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000002,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000002,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000002,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000002,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000002,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000002,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000003,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000003,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000003,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000003,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000003,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000003,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000004,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000004,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000004,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000004,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000004,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000004,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000005,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000005,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000005,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000005,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000005,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000005,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000006,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000006,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000006,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000006,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000006,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000006,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000007,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000007,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000007,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000007,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000007,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000007,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000008,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000008,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000008,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000008,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000008,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000008,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000009,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000009,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000009,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000009,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000009,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000009,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000010,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000010,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000010,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000010,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000010,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000010,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000011,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000011,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000011,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000011,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000011,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000011,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000012,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000012,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000012,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000012,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000012,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000012,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000013,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000013,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000013,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000013,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000013,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000013,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000014,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000014,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000014,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000014,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000014,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000014,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000015,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000015,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000015,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000015,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000015,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000015,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000016,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000016,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000016,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000016,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000016,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000016,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000017,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000017,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000017,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000017,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000017,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000017,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000018,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000018,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000018,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000018,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000018,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000018,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000019,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000019,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000019,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000019,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000019,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000019,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000020,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000020,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000020,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000020,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000020,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000020,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000021,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000021,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000021,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000021,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000021,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000021,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000022,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000022,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000022,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000022,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000022,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000022,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000023,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000023,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000023,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000023,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000023,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000023,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000024,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000024,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000024,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000024,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000024,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000024,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000025,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000025,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000025,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000025,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000025,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000025,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000026,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000026,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000026,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000026,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000026,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000026,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000027,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000027,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000027,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000027,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000027,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000027,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000028,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000028,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000028,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000028,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000028,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000028,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000029,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000029,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000029,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000029,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000029,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000029,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000030,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000030,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000030,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000030,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000030,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000030,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000031,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000031,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000031,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000031,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000031,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000031,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000032,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000032,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000032,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000032,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000032,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000032,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S0,E09000033,swing_concentration,metric_lower_bound_clamped,Applied swing_concentration lower bound 1.0
+S0,E09000033,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S1,E09000033,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S2,E09000033,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S3,E09000033,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
+S4,E09000033,turnout_delta,interval_widened,Expanded P90-P10 to RMSE floor 15.061156
