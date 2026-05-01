@@ -1,24 +1,24 @@
 # civic-lens Model Lock
 
-Status: NOT YET LOCKED
+Status: LOCKED
 
-This file will be committed when Phase 12 scenario outputs are frozen.
+This file records the frozen Phase 13 scenario-output model state.
 The commit SHA hash will be the permanent record of the model state.
 
 Contents at lock time:
-  model_version_sha:        [git commit hash — identifies code state exactly]
-  scenario_definitions_sha: [hash of docs/SCENARIO_DEFINITIONS.md]
+  model_version_sha:        b795a07748d177592fec43e1fef832faeab03cfb
+  scenario_definitions_sha: b862faf8eab6b7f235c707241db7078de846f8ca
   volatility_score_formula: VOL = (0.5 × Σ|swing_i|) + (0.5 × ΔFI)
   bootstrap_source:         tier-level mean-centered historical error pools
   rng_seed:                 20260430
-  freeze_timestamp_utc:     2026-04-30T[HH:MM:SS]Z
+  freeze_timestamp_utc:     2026-05-01T00:13:56Z
   statement: |
-    Model frozen 30 April 2026 to prevent adaptive tuning.
+    Model frozen 1 May 2026 to prevent adaptive tuning.
     No parameters, scenarios, or uncertainty bands were modified
     after this timestamp.
 
 Reproduction:
-  git checkout [model_version_sha]
+  git checkout b795a07748d177592fec43e1fef832faeab03cfb
   pip install -r requirements.txt
   python src/civic_lens/calibration.py
   python src/civic_lens/scenario_model.py
